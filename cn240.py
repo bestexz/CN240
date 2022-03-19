@@ -1,14 +1,17 @@
 from os import listdir
+import os
 import mediapipe as mp
 import cv2
+import csv
+import numpy as np
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
 
 path = r"train_images/"
 namelist = listdir(path)
-for images in namelist:
-    with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+    for images in namelist:
         image = cv2.imread(path + images, 0)
 
         # Recolor Feed
@@ -32,9 +35,25 @@ for images in namelist:
         #                              mp_drawing.DrawingSpec(color=(80,256,121), thickness=1, circle_radius=1)
         #                              )
 
-    cv2.imshow('image', image)
-    if cv2.waitKey(10) & 0xFF == ord('q'):
-        break
+        print(images)
+        cv2.imshow('image', image)
+        if cv2.waitKey(10) & 0xFF == ord('q'):
+            break
     
 cv2.destroyAllWindows()
-results.face_landmarks.landmark[0].visibility
+print(results.face_landmarks.landmark[0].visibility)
+
+num_coords = len(results.face_landmarks.landmark)
+print(num_coords)
+
+landmarks = ['class']
+for val in range(1, num_coords+1):
+    landmarks += ['x{}'.format(val), 'y{}'.format(val), 'z{}'.format(val), 'v{}'.format(val), ]
+
+print(landmarks)
+
+with open('coords.csv', mode='w', newline='') as f:
+    csv_writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    csv_writer.writerow(landmarks)
+
+    
